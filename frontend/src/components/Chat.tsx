@@ -63,6 +63,7 @@ const Chat: React.FC = () => {
 
   const leaveRoom = () => {
     socket.emit("leaveRoom");
+    setMessages([]);
   };
 
   return (
@@ -93,7 +94,10 @@ const Chat: React.FC = () => {
       </div>
       <div>
         {messages.map((msg, i) => (
-          <div key={i} style={{ color: msg.user === name ? "blue" : "black" }}>
+          <div
+            key={msg.id}
+            style={{ color: msg.user === name ? "blue" : "black" }}
+          >
             {msg.user}: {msg.text}
             {msg.user === name && (
               <button
