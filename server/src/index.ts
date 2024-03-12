@@ -28,6 +28,7 @@ interface Message {
   text: string;
   time: string;
 }
+
 const users: User[] = [];
 const chatHistory: { [room: string]: Message[] } = {};
 
