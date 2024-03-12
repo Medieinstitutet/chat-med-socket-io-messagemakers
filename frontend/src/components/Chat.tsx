@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
+import "../styles/main.scss";
 
 interface ErrorObj {
   message: string;
@@ -18,7 +19,12 @@ export const Chat: React.FC = () => {
 
   useEffect(() => {
     socket.on("message", (message) => {
-      setMessages((msgs) => [...msgs, message]);
+      setMessages((msgs) => {
+        if (!msgs.some((msg) => msg.id === message.id)) {
+          return [...msgs, message];
+        }
+        return msgs;
+      });
     });
   }, []);
 
@@ -67,54 +73,68 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className="chat-container">
+      <div className="input-container">
         <input
           type="text"
           placeholder="Namn"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="name-input"
         />
         <input
           type="text"
           placeholder="Rum"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
+          className="room-input"
         />
-        <button onClick={joinRoom}>Gå med i rum</button>
+        <button onClick={joinRoom} className="join-room-button">
+          Gå med i rum
+        </button>
       </div>
-      <div>
+
+      <div className="message-input-container">
         <input
           type="text"
           placeholder="Skriv ditt meddelande..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
+          className="message-input"
         />
       </div>
-      <div>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            style={{ color: msg.user === name ? "blue" : "black" }}
-          >
-            {msg.user}: {msg.text}
-            {msg.user === name && (
-              <button
-                onClick={() => {
-                  const newText = prompt("Redigera dit meddelande", msg.text);
-                  if (newText) {
-                    editMessage(msg.id, newText);
-                  }
-                }}
-              >
-                Edit
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      <button onClick={leaveRoom}>Lämna rummet</button>
+
+      <div className="messages-container">
+  {messages.map((msg) => (
+    <div
+      key={msg.id} 
+      className={msg.user === name ? "message blue" : "message black"}
+    >
+      {msg.user}: {msg.text}
+      {msg.user === name && (
+        <button
+          onClick={() => {
+            const newText = prompt("Redigera dit meddelande", msg.text);
+            if (newText) {
+              editMessage(msg.id, newText);
+            }
+          }}
+          className="edit-button"
+        >
+          Edit
+        </button>
+      )}
+    </div>
+  ))}
+</div>
+
+      
+      <button onClick={leaveRoom} className="leave-room-button">
+        Lämna rummet
+      </button>
     </div>
   );
 };
+
+export default Chat;
