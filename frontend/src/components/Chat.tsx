@@ -8,7 +8,7 @@ interface ErrorObj {
 
 const socket = io("http://localhost:3000");
 
-const Chat: React.FC = () => {
+export const Chat: React.FC = () => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
@@ -71,29 +71,29 @@ const Chat: React.FC = () => {
       <div>
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Namn"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Room"
+          placeholder="Rum"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
         />
-        <button onClick={joinRoom}>Join Room</button>
+        <button onClick={joinRoom}>Gå med i rum</button>
       </div>
       <div>
         <input
           type="text"
-          placeholder="Type a message..."
+          placeholder="Skriv ditt meddelande..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
         />
       </div>
       <div>
-        {messages.map((msg, i) => (
+        {messages.map((msg) => (
           <div
             key={msg.id}
             style={{ color: msg.user === name ? "blue" : "black" }}
@@ -102,7 +102,7 @@ const Chat: React.FC = () => {
             {msg.user === name && (
               <button
                 onClick={() => {
-                  const newText = prompt("Edit your message", msg.text);
+                  const newText = prompt("Redigera dit meddelande", msg.text);
                   if (newText) {
                     editMessage(msg.id, newText);
                   }
@@ -114,9 +114,7 @@ const Chat: React.FC = () => {
           </div>
         ))}
       </div>
-      <button onClick={leaveRoom}>Lämna Rum</button>
+      <button onClick={leaveRoom}>Lämna rummet</button>
     </div>
   );
 };
-
-export default Chat;
