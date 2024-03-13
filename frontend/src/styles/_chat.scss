@@ -45,21 +45,23 @@
 }
 
 .message {
-    padding: 10px;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 20px;
+    overflow: hidden;
 }
 
 .message.blue {
     background-color: #007bff;
     color: #fff;
     margin: 10px;
+    margin-left: 60%;
 
 
 }
 
 .message.black {
-    background-color: #000;
-    color: #fff;
+    background-color: #dfdcdc;
+    color: black;
     margin: 10px;
 }
 
@@ -80,4 +82,13 @@
     background-color: #dc3545;
     color: #fff;
     cursor: pointer;
+}
+
+
+.profile-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+
 }

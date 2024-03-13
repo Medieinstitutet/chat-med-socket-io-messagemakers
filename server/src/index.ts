@@ -74,12 +74,10 @@ io.on("connection", (socket: Socket) => {
       user: "admin",
       text: `${user.name}, välkommen till rum ${room}.`,
     });
-    socket.broadcast
-      .to(user.room)
-      .emit("message", {
-        user: "Server",
-        text: `${user.name} har anslutit till rummet.`,
-      });
+    socket.broadcast.to(user.room).emit("message", {
+      user: "Server",
+      text: `${user.name} har anslutit till rummet.`,
+    });
 
     callback();
   });

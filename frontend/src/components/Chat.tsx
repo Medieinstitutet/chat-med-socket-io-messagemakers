@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import "../styles/main.scss";
+import blueProfileImage from "../assets/blue.png"; 
+import blackProfileImage from "../assets/black.png"; 
 
 interface ErrorObj {
   message: string;
@@ -63,7 +65,7 @@ export const Chat: React.FC = () => {
     }
   };
 
-  const editMessage = (messageId: number, newText: string) => {
+  const editMessage = (messageId: number,newText: string) => {
     socket.emit("editMessage", { messageId, newText, room }, () => {});
   };
 
@@ -94,6 +96,35 @@ export const Chat: React.FC = () => {
         </button>
       </div>
 
+      <div className="messages-container">
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={msg.user === name ? "message blue" : "message black"}
+          >
+            <img
+              src={msg.user === name ? blueProfileImage : blackProfileImage}
+              alt="Profile"
+              className="profile-image"
+            />
+            {msg.user}: {msg.text}
+            {msg.user === name && (
+              <button
+                onClick={() => {
+                  const newText = prompt("Redigera dit meddelande", msg.text);
+                  if (newText) {
+                    editMessage(msg.id, newText);
+                  }
+                }}
+                className="edit-button"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
       <div className="message-input-container">
         <input
           type="text"
@@ -105,31 +136,6 @@ export const Chat: React.FC = () => {
         />
       </div>
 
-      <div className="messages-container">
-  {messages.map((msg) => (
-    <div
-      key={msg.id} 
-      className={msg.user === name ? "message blue" : "message black"}
-    >
-      {msg.user}: {msg.text}
-      {msg.user === name && (
-        <button
-          onClick={() => {
-            const newText = prompt("Redigera dit meddelande", msg.text);
-            if (newText) {
-              editMessage(msg.id, newText);
-            }
-          }}
-          className="edit-button"
-        >
-          Edit
-        </button>
-      )}
-    </div>
-  ))}
-</div>
-
-      
       <button onClick={leaveRoom} className="leave-room-button">
         Lämna rummet
       </button>
