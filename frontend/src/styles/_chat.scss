@@ -1,0 +1,94 @@
+.chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.input-container input {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.join-room-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.message-input-container {
+    margin-bottom: 10px;
+}
+
+.message-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.messages-container {
+    margin-bottom: 10px;
+}
+
+.message {
+    padding: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.message.blue {
+    background-color: #007bff;
+    color: #fff;
+    margin: 10px;
+    margin-left: 60%;
+
+
+}
+
+.message.black {
+    background-color: #dfdcdc;
+    color: black;
+    margin: 10px;
+}
+
+.edit-button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+}
+
+.leave-room-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #dc3545;
+    color: #fff;
+    cursor: pointer;
+}
+
+
+.profile-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+
+}

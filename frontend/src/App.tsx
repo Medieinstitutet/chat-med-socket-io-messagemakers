@@ -1,14 +1,12 @@
+import "./App.css";
+import Chat from "./Components/Chat";
 
-import './App.css'
-import ChatComponent from './Components/ChatComponent';
+function App() {
+  return (
+    <>
+      <Chat></Chat>
+    </>
+  );
+}
 
-  function App() {
-    return (
-      <div className="App">
-        <ChatComponent />
-      </div>
-    );
-  }
- 
-
-export default App
+export default App;
