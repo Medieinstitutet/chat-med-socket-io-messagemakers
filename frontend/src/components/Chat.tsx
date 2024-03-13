@@ -16,7 +16,7 @@ export const Chat: React.FC = () => {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<
-    Array<{ user: string; text: string; id: number }>
+    Array<{ user: string; text: string; id: number }>   
   >([]);
 
   useEffect(() => {
@@ -96,6 +96,17 @@ export const Chat: React.FC = () => {
         </button>
       </div>
 
+      <div className="message-input-container">
+        <input
+          type="text"
+          placeholder="Skriv ditt meddelande..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
+          className="message-input"
+        />
+      </div>
+
       <div className="messages-container">
         {messages.map((msg) => (
           <div
@@ -123,17 +134,6 @@ export const Chat: React.FC = () => {
             )}
           </div>
         ))}
-      </div>
-
-      <div className="message-input-container">
-        <input
-          type="text"
-          placeholder="Skriv ditt meddelande..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
-          className="message-input"
-        />
       </div>
 
       <button onClick={leaveRoom} className="leave-room-button">
