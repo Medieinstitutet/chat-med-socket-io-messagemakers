@@ -16,26 +16,38 @@ export const Chat: React.FC = () => {
   const [messages, setMessages] = useState<
     Array<{ user: string; text: string; id: number }>
   >([]);
+  const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
-    socket.on("message", (message) => {
-      setMessages((msgs) => {
-        if (!msgs.some((msg) => msg.id === message.id)) {
-          return [...msgs, message];
-        }
-        return msgs;
-      });
-    });
+    const newSocket = io("http://localhost:3000");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
   }, []);
 
   useEffect(() => {
-    socket.on("loadHistory", (history) => {
-      setMessages(history);
-    });
-  }, [socket]);
+    if (socket == null) return;
 
-  useEffect(() => {
-    socket.on("messageEdited", (editedMessage) => {
+    const messageListener = (message: {
+      user: string;
+      text: string;
+      id: number;
+    }) => {
+      setMessages((msgs) => [...msgs, message]);
+    };
+
+    const loadHistoryListener = (
+      history: Array<{ user: string; text: string; id: number }>
+    ) => {
+      setMessages(history);
+    };
+
+    const messageEditedListener = (editedMessage: {
+      id: number;
+      text: string;
+    }) => {
       setMessages((currentMessages) =>
         currentMessages.map((msg) =>
           msg.id === editedMessage.id
@@ -43,7 +55,17 @@ export const Chat: React.FC = () => {
             : msg
         )
       );
-    });
+    };
+
+    socket.on("message", messageListener);
+    socket.on("loadHistory", loadHistoryListener);
+    socket.on("messageEdited", messageEditedListener);
+
+    return () => {
+      socket.off("message", messageListener);
+      socket.off("loadHistory", loadHistoryListener);
+      socket.off("messageEdited", messageEditedListener);
+    };
   }, [socket]);
 
   const joinRoom = () => {
@@ -106,30 +128,29 @@ export const Chat: React.FC = () => {
       </div>
 
       <div className="messages-container">
-  {messages.map((msg) => (
-    <div
-      key={msg.id} 
-      className={msg.user === name ? "message blue" : "message black"}
-    >
-      {msg.user}: {msg.text}
-      {msg.user === name && (
-        <button
-          onClick={() => {
-            const newText = prompt("Redigera dit meddelande", msg.text);
-            if (newText) {
-              editMessage(msg.id, newText);
-            }
-          }}
-          className="edit-button"
-        >
-          Edit
-        </button>
-      )}
-    </div>
-  ))}
-</div>
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={msg.user === name ? "message blue" : "message black"}
+          >
+            {msg.user}: {msg.text}
+            {msg.user === name && (
+              <button
+                onClick={() => {
+                  const newText = prompt("Redigera dit meddelande", msg.text);
+                  if (newText) {
+                    editMessage(msg.id, newText);
+                  }
+                }}
+                className="edit-button"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
 
-      
       <button onClick={leaveRoom} className="leave-room-button">
         Lämna rummet
       </button>
