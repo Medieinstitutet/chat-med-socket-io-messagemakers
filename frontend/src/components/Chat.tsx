@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import "../styles/main.scss";
 import blueProfileImage from "../assets/blue.png"; 
 import blackProfileImage from "../assets/black.png"; 
@@ -11,8 +11,6 @@ interface ErrorObj {
   code?: number;
 }
 
-const socket = io("http://localhost:3000");
-
 export const Chat: React.FC = () => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
@@ -20,26 +18,38 @@ export const Chat: React.FC = () => {
   const [messages, setMessages] = useState<
     Array<{ user: string; text: string; id: number }>   
   >([]);
+  const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    socket.on("message", (message) => {
-      setMessages((msgs) => {
-        if (!msgs.some((msg) => msg.id === message.id)) {
-          return [...msgs, message];
-        }
-        return msgs;
-      });
-    });
+    const newSocket = io("http://localhost:3000");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
   }, []);
 
   useEffect(() => {
-    socket.on("loadHistory", (history) => {
-      setMessages(history);
-    });
-  }, [socket]);
+    if (socket == null) return;
 
-  useEffect(() => {
-    socket.on("messageEdited", (editedMessage) => {
+    const messageListener = (message: {
+      user: string;
+      text: string;
+      id: number;
+    }) => {
+      setMessages((msgs) => [...msgs, message]);
+    };
+
+    const loadHistoryListener = (
+      history: Array<{ user: string; text: string; id: number }>
+    ) => {
+      setMessages(history);
+    };
+
+    const messageEditedListener = (editedMessage: {
+      id: number;
+      text: string;
+    }) => {
       setMessages((currentMessages) =>
         currentMessages.map((msg) =>
           msg.id === editedMessage.id
@@ -47,12 +57,22 @@ export const Chat: React.FC = () => {
             : msg
         )
       );
-    });
+    };
+
+    socket.on("message", messageListener);
+    socket.on("loadHistory", loadHistoryListener);
+    socket.on("messageEdited", messageEditedListener);
+
+    return () => {
+      socket.off("message", messageListener);
+      socket.off("loadHistory", loadHistoryListener);
+      socket.off("messageEdited", messageEditedListener);
+    };
   }, [socket]);
 
   const joinRoom = () => {
     if (name && room) {
-      socket.emit("join", { name, room }, (error: ErrorObj | null) => {
+      socket?.emit("join", { name, room }, (error: ErrorObj | null) => {
         if (error) {
           alert(error);
         }
@@ -63,16 +83,16 @@ export const Chat: React.FC = () => {
   const sendMessage = (e: React.KeyboardEvent) => {
     e.preventDefault();
     if (message && room) {
-      socket.emit("sendMessage", { message, room }, () => setMessage(""));
+      socket?.emit("sendMessage", { message, room }, () => setMessage(""));
     }
   };
 
   const editMessage = (messageId: number,newText: string) => {
-    socket.emit("editMessage", { messageId, newText, room }, () => {});
+    socket?.emit("editMessage", { messageId, newText, room }, () => {});
   };
 
   const leaveRoom = () => {
-    socket.emit("leaveRoom");
+    socket?.emit("leaveRoom");
     setMessages([]);
   };
 
@@ -137,6 +157,7 @@ export const Chat: React.FC = () => {
         />
       </div>
 
+      
       <button onClick={leaveRoom} className="leave-room-button">
         Lämna rummet
       </button>

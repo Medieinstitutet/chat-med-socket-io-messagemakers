@@ -1,4 +1,4 @@
-import "./App.css";
+import "./App.scss";
 import Chat from "./Components/Chat";
 
 function App() {
