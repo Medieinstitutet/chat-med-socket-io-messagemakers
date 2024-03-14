@@ -7,8 +7,6 @@ interface ErrorObj {
   code?: number;
 }
 
-const socket = io("http://localhost:3000");
-
 export const Chat: React.FC = () => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
