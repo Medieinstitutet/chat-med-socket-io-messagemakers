@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
+import "../styles/main.scss";
 
 interface ErrorObj {
   message: string;
@@ -15,21 +16,38 @@ export const Chat: React.FC = () => {
   const [messages, setMessages] = useState<
     Array<{ user: string; text: string; id: number }>
   >([]);
+  const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
-    socket.on("message", (message) => {
-      setMessages((msgs) => [...msgs, message]);
-    });
+    const newSocket = io("http://localhost:3000");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
   }, []);
 
   useEffect(() => {
-    socket.on("loadHistory", (history) => {
-      setMessages(history);
-    });
-  }, [socket]);
+    if (socket == null) return;
 
-  useEffect(() => {
-    socket.on("messageEdited", (editedMessage) => {
+    const messageListener = (message: {
+      user: string;
+      text: string;
+      id: number;
+    }) => {
+      setMessages((msgs) => [...msgs, message]);
+    };
+
+    const loadHistoryListener = (
+      history: Array<{ user: string; text: string; id: number }>
+    ) => {
+      setMessages(history);
+    };
+
+    const messageEditedListener = (editedMessage: {
+      id: number;
+      text: string;
+    }) => {
       setMessages((currentMessages) =>
         currentMessages.map((msg) =>
           msg.id === editedMessage.id
@@ -37,7 +55,17 @@ export const Chat: React.FC = () => {
             : msg
         )
       );
-    });
+    };
+
+    socket.on("message", messageListener);
+    socket.on("loadHistory", loadHistoryListener);
+    socket.on("messageEdited", messageEditedListener);
+
+    return () => {
+      socket.off("message", messageListener);
+      socket.off("loadHistory", loadHistoryListener);
+      socket.off("messageEdited", messageEditedListener);
+    };
   }, [socket]);
 
   const joinRoom = () => {
@@ -67,36 +95,43 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className="chat-container">
+      <div className="input-container">
         <input
           type="text"
           placeholder="Namn"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="name-input"
         />
         <input
           type="text"
           placeholder="Rum"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
+          className="room-input"
         />
-        <button onClick={joinRoom}>Gå med i rum</button>
+        <button onClick={joinRoom} className="join-room-button">
+          Gå med i rum
+        </button>
       </div>
-      <div>
+
+      <div className="message-input-container">
         <input
           type="text"
           placeholder="Skriv ditt meddelande..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
+          className="message-input"
         />
       </div>
-      <div>
+
+      <div className="messages-container">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            style={{ color: msg.user === name ? "blue" : "black" }}
+            className={msg.user === name ? "message blue" : "message black"}
           >
             {msg.user}: {msg.text}
             {msg.user === name && (
@@ -107,6 +142,7 @@ export const Chat: React.FC = () => {
                     editMessage(msg.id, newText);
                   }
                 }}
+                className="edit-button"
               >
                 Edit
               </button>
@@ -114,7 +150,12 @@ export const Chat: React.FC = () => {
           </div>
         ))}
       </div>
-      <button onClick={leaveRoom}>Lämna rummet</button>
+
+      <button onClick={leaveRoom} className="leave-room-button">
+        Lämna rummet
+      </button>
     </div>
   );
 };
+
+export default Chat;
