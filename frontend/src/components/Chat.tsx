@@ -3,6 +3,8 @@ import io from "socket.io-client";
 import "../styles/main.scss";
 import blueProfileImage from "../assets/blue.png"; 
 import blackProfileImage from "../assets/black.png"; 
+import adminProfileImage from "../assets/admin.jpg"; 
+import serverProfileImage from "../assets/server.jpg";
 
 interface ErrorObj {
   message: string;
@@ -103,7 +105,7 @@ export const Chat: React.FC = () => {
             className={msg.user === name ? "message blue" : "message black"}
           >
             <img
-              src={msg.user === name ? blueProfileImage : blackProfileImage}
+              src={msg.user === "admin" ? adminProfileImage : (msg.user === "Server" ? serverProfileImage : (msg.user === name ? blueProfileImage : blackProfileImage))}
               alt="Profile"
               className="profile-image"
             />
