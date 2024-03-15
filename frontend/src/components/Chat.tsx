@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 import "../styles/main.scss";
-import blueProfileImage from "../assets/blue.png"; 
-import blackProfileImage from "../assets/black.png"; 
-import adminProfileImage from "../assets/admin.jpg"; 
+import blueProfileImage from "../assets/blue.png";
+import blackProfileImage from "../assets/black.png";
+import adminProfileImage from "../assets/admin.jpg";
 import serverProfileImage from "../assets/server.jpg";
 
 interface ErrorObj {
@@ -16,7 +16,7 @@ export const Chat: React.FC = () => {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<
-    Array<{ user: string; text: string; id: number }>   
+    Array<{ user: string; text: string; id: number }>
   >([]);
   const [socket, setSocket] = useState<Socket>();
 
@@ -87,7 +87,7 @@ export const Chat: React.FC = () => {
     }
   };
 
-  const editMessage = (messageId: number,newText: string) => {
+  const editMessage = (messageId: number, newText: string) => {
     socket?.emit("editMessage", { messageId, newText, room }, () => {});
   };
 
@@ -125,7 +125,15 @@ export const Chat: React.FC = () => {
             className={msg.user === name ? "message blue" : "message black"}
           >
             <img
-              src={msg.user === "admin" ? adminProfileImage : (msg.user === "Server" ? serverProfileImage : (msg.user === name ? blueProfileImage : blackProfileImage))}
+              src={
+                msg.user === "admin"
+                  ? adminProfileImage
+                  : msg.user === "Server"
+                  ? serverProfileImage
+                  : msg.user === name
+                  ? blueProfileImage
+                  : blackProfileImage
+              }
               alt="Profile"
               className="profile-image"
             />
@@ -157,7 +165,6 @@ export const Chat: React.FC = () => {
         />
       </div>
 
-      
       <button onClick={leaveRoom} className="leave-room-button">
         Lämna rummet
       </button>
