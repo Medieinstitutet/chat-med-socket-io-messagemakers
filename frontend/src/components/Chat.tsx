@@ -18,6 +18,7 @@ export const Chat: React.FC = () => {
   const [messages, setMessages] = useState<
     Array<{ user: string; text: string; id: number }>
   >([]);
+  const [isInRoom, setIsInRoom] = useState(false);
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
@@ -68,16 +69,26 @@ export const Chat: React.FC = () => {
       socket.off("loadHistory", loadHistoryListener);
       socket.off("messageEdited", messageEditedListener);
     };
-  }, [socket]);
+  }, [socket, room]);
 
   const joinRoom = () => {
-    if (name && room) {
-      socket?.emit("join", { name, room }, (error: ErrorObj | null) => {
-        if (error) {
-          alert(error);
-        }
-      });
+    if (!name || !room) {
+      alert("Namn och rum krävs.");
+      return;
     }
+
+    if (isInRoom) {
+      socket?.emit("leaveRoom");
+      setMessages([]);
+    }
+
+    socket?.emit("join", { name, room }, (error: ErrorObj | null) => {
+      if (error) {
+        alert(error.message);
+      } else {
+        setIsInRoom(true);
+      }
+    });
   };
 
   const sendMessage = (e: React.KeyboardEvent) => {
@@ -94,6 +105,7 @@ export const Chat: React.FC = () => {
   const leaveRoom = () => {
     socket?.emit("leaveRoom");
     setMessages([]);
+    setIsInRoom(false);
   };
 
   return (

@@ -33,26 +33,29 @@ const users: User[] = [];
 const chatHistory: { [room: string]: Message[] } = {};
 
 const userJoin = (id: string, name: string, room: string): User | null => {
-  const existingUser = users.find(
-    (user) => user.room === room && user.name === name && user.isActive
-  );
-
-  if (existingUser) {
-    return null;
-  } else {
-    const user = { socketId: id, name, room, isActive: true };
+  let user = users.find(user => user.name === name && user.room === room);
+  
+  if (user && !user.isActive) {
+    user.isActive = true;
+    user.socketId = id;
+    return user;
+  } else if (!user) {
+    user = { socketId: id, name, room, isActive: true };
     users.push(user);
     return user;
   }
+  
+  return null;
 };
 
+  
 const userLeave = (id: string): User | undefined => {
-  const user = users.find((user) => user.socketId === id);
-  if (user) {
-    user.isActive = false;
+  const index = users.findIndex(user => user.socketId === id);
+  if (index !== -1) {
+    return users.splice(index, 1)[0]; 
   }
-  return user;
 };
+
 
 const addMessageToHistory = (room: string, message: Message) => {
   if (!chatHistory[room]) {
