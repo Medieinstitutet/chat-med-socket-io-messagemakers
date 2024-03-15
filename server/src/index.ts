@@ -48,14 +48,12 @@ const userJoin = (id: string, name: string, room: string): User | null => {
   return null;
 };
 
-  
 const userLeave = (id: string): User | undefined => {
   const index = users.findIndex(user => user.socketId === id);
   if (index !== -1) {
     return users.splice(index, 1)[0]; 
   }
 };
-
 
 const addMessageToHistory = (room: string, message: Message) => {
   if (!chatHistory[room]) {
@@ -69,9 +67,9 @@ io.on("connection", (socket: Socket) => {
     const user = userJoin(socket.id, name, room);
 
     if (!user) {
-      return callback(
-        "Användarnamnet är redan taget i detta rum, vänligen välj ett annat."
-      );
+      return callback({
+        message: "Användarnamnet är redan taget i detta rum, vänligen välj ett annat."
+      });
     }
 
     socket.join(user.room);
